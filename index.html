@@ -39,6 +39,9 @@
       font-size: 1rem;
       word-break: break-all;
     }
+    #qrcode {
+      margin-top: 24px;
+    }
   </style>
 </head>
 <body>
@@ -48,24 +51,44 @@
     <button id="openBtn">Open</button>
   </div>
   <div id="preview"></div>
+  <div id="qrcode"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous"></script>
   <script>
     const input = document.getElementById('urlInput');
     const btn = document.getElementById('openBtn');
     const preview = document.getElementById('preview');
+    const qrcodeDiv = document.getElementById('qrcode');
+
+    let debounceTimer;
+
     input.addEventListener('input', function () {
-      const val = input.value;
-      if (val) {
-        const a = document.createElement('a');
-        a.href = val;
-        a.textContent = val;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        preview.innerHTML = '';
-        preview.appendChild(a);
-      } else {
-        preview.innerHTML = '';
-      }
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function () {
+        const val = input.value;
+        if (val) {
+          const a = document.createElement('a');
+          a.href = val;
+          a.textContent = val;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          preview.innerHTML = '';
+          preview.appendChild(a);
+          qrcodeDiv.innerHTML = '';
+          QRCode.toCanvas(val, { width: 200 }, function (err, canvas) {
+            if (err) {
+              const msg = document.createElement('p');
+              msg.textContent = 'Could not generate QR code.';
+              qrcodeDiv.appendChild(msg);
+            } else {
+              qrcodeDiv.appendChild(canvas);
+            }
+          });
+        } else {
+          preview.innerHTML = '';
+          qrcodeDiv.innerHTML = '';
+        }
+      }, 300);
     });
 
     btn.addEventListener('click', function () {
