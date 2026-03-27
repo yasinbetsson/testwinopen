@@ -53,40 +53,25 @@
     const input = document.getElementById('urlInput');
     const btn = document.getElementById('openBtn');
     const preview = document.getElementById('preview');
-    const DEBOUNCE_DELAY_MS = 150;
-
-    function isSafeUrl(val) {
-      try {
-        const url = new URL(val);
-        return url.protocol === 'http:' || url.protocol === 'https:';
-      } catch (_) {
-        return false;
-      }
-    }
-
-    let debounceTimer;
     input.addEventListener('input', function () {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(function () {
-        const val = input.value.trim();
-        if (val && isSafeUrl(val)) {
-          const a = document.createElement('a');
-          a.href = val;
-          a.textContent = val;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          preview.innerHTML = '';
-          preview.appendChild(a);
-        } else {
-          preview.innerHTML = '';
-        }
-      }, DEBOUNCE_DELAY_MS);
+      const val = input.value;
+      if (val) {
+        const a = document.createElement('a');
+        a.href = val;
+        a.textContent = val;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        preview.innerHTML = '';
+        preview.appendChild(a);
+      } else {
+        preview.innerHTML = '';
+      }
     });
 
     btn.addEventListener('click', function () {
-      const val = input.value.trim();
-      if (val && isSafeUrl(val)) {
-        window.open(val, '_blank', 'noopener,noreferrer');
+      const val = input.value;
+      if (val) {
+        window.open(val);
       }
     });
   </script>
